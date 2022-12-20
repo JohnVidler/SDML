@@ -1,0 +1,21 @@
+..use: markdown
+
+..title: An Example SDML File
+    This should be body text, as part of the previous directive
+
+        Kinda meaningless, but this should be a deeper scope
+            And another deeper scope
+                And another!
+            Back out
+                Back in!
+        Out two!
+
+# Title 1
+## Title 2
+### Title 3
+#### Title 4
+##### Title 5
+
+..title:
+    Longer title content should be aligned immediately after the directive
+    but can also now be multiline, in theory
