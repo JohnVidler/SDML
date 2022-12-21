@@ -28,6 +28,7 @@ CWD         = os.getcwd()
 BUILD_PATH  = os.getenv("SDML_BUILD_PATH", os.path.join( CWD, "output" ) )
 SOURCE_PATH = os.getenv("SDML_SOURCE_PATH", os.path.join( CWD ) )
 
+from Logging import Log
 from Lexer import Lexer, TokenType
 from SDMLParser import Parser
 
@@ -41,6 +42,11 @@ def r_buildFileList( path, output=[] ):
             output.append( os.path.join( path, f ) )
     return output
 
+
+# Ensure we have somewhere to send stuff
+if not os.path.exists( BUILD_PATH ):
+    Log.info( "No build output path found, creating it" )
+    os.mkdir( BUILD_PATH )
 
 # Build a (flat) list of files to parse
 fList = r_buildFileList( SOURCE_PATH )

@@ -21,9 +21,12 @@
 # SOFTWARE.
 
 import os
+from Logging import Log, LogLevel
 from importlib import import_module
 from enum import auto
 from Lexer import Lexer, TokenType, Token
+
+Log.level = LogLevel.DEBUG
 
 SCRIPT_PATH = os.path.realpath( __file__ )
 
@@ -39,6 +42,7 @@ class Parser:
     nextToken = None;
 
     def __init__(self, lexer: Lexer) -> None:
+        Log.debug( "Creating a new Parser" )
         self.lexer = lexer
         self.nextToken = lexer.nextToken()
     
@@ -90,7 +94,7 @@ class Parser:
         library = self.acceptToken( TokenType.TEXT ).value
 
         if library not in self.libraries:
-            print( f"[WW]\tNo such library {library} loaded, skipped unbind." )
+            Log.warn( f"No such library {library} loaded, skipped unbind." )
             return
 
         addon = self.libraries.pop(library); # Remove the library and keep a temporary reference...
@@ -106,7 +110,7 @@ class Parser:
         
         titleText = self.parseText( directive )
 
-        print( f"New title: '{titleText.lstrip()}', args = {args}" )
+        Log.debug( f"New title: '{titleText.lstrip()}', args = {args}" )
 
     def parseArgument( self, parent ):
         argument = self.acceptToken( TokenType.ARGUMENT ).value
@@ -126,10 +130,10 @@ class Parser:
             if( self.nextToken.scope != currentScope and self.nextToken.type != TokenType.BREAK ):
                 while( self.nextToken.scope != currentScope ):
                     if( self.nextToken.scope > currentScope ):
-                        print( "<p>" );
+                        Log.debug( "<p>" );
                         currentScope += 1
                     elif( self.nextToken.scope < currentScope ):
-                        print( "</p>" );
+                        Log.debug( "</p>" );
                         currentScope -= 1
                     
                 currentScope = self.nextToken.scope
@@ -138,13 +142,13 @@ class Parser:
                 self.parseDirective()
             
             elif self.nextToken.type == TokenType.TEXT:
-                print( ('-' * self.nextToken.scope) + ' ' + self.acceptToken(TokenType.TEXT).value )
+                Log.debug( ('-' * self.nextToken.scope) + ' ' + self.acceptToken(TokenType.TEXT).value )
             
             elif self.nextToken.type == TokenType.BREAK:
                 self.acceptToken( TokenType.BREAK )
-                print( "BREAK" )
+                Log.debug( "BREAK" )
 
             else:
-                print( f"Unknown token: {self.acceptToken( None )}" )
+                Log.warn( f"Unknown token: {self.acceptToken( None )}" )
         
         return root

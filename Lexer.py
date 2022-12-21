@@ -24,6 +24,7 @@ import re
 import os
 from DataStructures import SparseList
 from enum import Enum
+from Logging import Log
 
 ENCODING = os.getenv("SDML_ENCODING", 'utf-8' )
 
@@ -67,7 +68,7 @@ def lex_handleScope( lexer, line: str ):
     scopePrefix = re.search( '^(\s+)', line )
     if scopePrefix != None:
         if lexer.scopeStep == 0:
-            print( F"First scoped block, using {len(scopePrefix.group(1))} spaces as our scope step size" )
+            Log.info( F"First scoped block, using {len(scopePrefix.group(1))} spaces as our scope step size" )
             lexer.scopeStep = len(scopePrefix.group(1))
         lexer.scope = int(len(scopePrefix.group(1)) / lexer.scopeStep)
     return line
@@ -106,12 +107,12 @@ class Lexer:
 
     def setStage( self, index: int, func ):
         if self.stages[index]:
-            print( f"[WW]\tLexer stage {index} was already in use, but has been overwritten!" )
+            Log.warn( f"Lexer stage {index} was already in use, but has been overwritten!" )
         self.stages[index] = func
     
     def clearStage( self, index:int, func ):
         if self.stages[index] and self.stages[index] != func:
-            print( f"[WW]\tLexer stage {index} was in use, but not by the function supplied! Refusing to remove." )
+            Log.warn( f"Lexer stage {index} was in use, but not by the function supplied! Refusing to remove." )
             return
         self.stages[index] = None
 
